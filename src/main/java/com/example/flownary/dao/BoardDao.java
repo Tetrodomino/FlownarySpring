@@ -15,6 +15,11 @@ public interface BoardDao {
 	@Select("select * from board where bid=#{bid}")
 	Board getBoard(int bid);
 	
+	@Select("select count(b.bid) from board b"
+	         + " JOIN users u ON b.uid=u.uid"
+	         + " where b.isDeleted=0 and ${field} like #{query}")
+	int getBoardCount(String field, String query);
+	
 	@Select("select * from board"
 			+ " where isDeleted=0 and ${field} like #{query}"
 			+ " order by modTime desc"
@@ -36,9 +41,13 @@ public interface BoardDao {
 	@Update("update board set isDeleted=-1 where bid=#{bid}")
 	void deleteBoard(int bid);
 	
-	@Update("update board set viewCount=#{viewCount}, likeCount=#{likeCount}, replyCount=#{replyCount}"
+	@Update("update board set replyCount=#{replyCount}"
 			+ " where bid=#{bid}")
-	void updateCount(Board board);
+	void updateReplyCount(int bid, int replyCount);
+	
+	@Update("update board set likeCount=#{likeCount}"
+			+ " where bid=#{bid}")
+	void updateLikeCount(int bid, int likeCount);
 	
 	@Update("update board set viewCount=viewCount+1 where bid=#{bid} ")
 	void updateViewCount(int bid);

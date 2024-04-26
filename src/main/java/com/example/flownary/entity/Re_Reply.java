@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 
 public class Re_Reply {
 
-	int rid;
 	int rrid;
+	int rid;
 	int uid;
 	String rrContents;
 	LocalDateTime modTime;
-	int isDeleted;
-	int bid;
+	int likeCount;
 	String nickname;
+	int isDeleted;
 	
 	public Re_Reply() {
 	}
@@ -20,6 +20,13 @@ public class Re_Reply {
 		this.rid = rid;
 		this.uid = uid;
 		this.rrContents = rrContents;
+	}
+
+	public Re_Reply(int rid, int uid, String rrContents, String nickname) {
+		this.rid = rid;
+		this.uid = uid;
+		this.rrContents = rrContents;
+		this.nickname = nickname;
 	}
 
 	public Re_Reply(int rid, int rrid, int uid, String rrContents, LocalDateTime modTime, int isDeleted) {
@@ -31,16 +38,27 @@ public class Re_Reply {
 		this.isDeleted = isDeleted;
 	}
 
-	public Re_Reply(int rid, int rrid, int uid, String rrContents, LocalDateTime modTime, int isDeleted, int bid,
+	public Re_Reply(int rid, int rrid, int uid, String rrContents, LocalDateTime modTime, int isDeleted,
 			String nickname) {
-		this.rid = rid;
 		this.rrid = rrid;
+		this.rid = rid;
 		this.uid = uid;
 		this.rrContents = rrContents;
 		this.modTime = modTime;
 		this.isDeleted = isDeleted;
-		this.bid = bid;
 		this.nickname = nickname;
+	}
+
+	public Re_Reply(int rrid, int rid, int uid, String rrContents, LocalDateTime modTime, int likeCount,
+			String nickname, int isDeleted) {
+		this.rrid = rrid;
+		this.rid = rid;
+		this.uid = uid;
+		this.rrContents = rrContents;
+		this.modTime = modTime;
+		this.likeCount = likeCount;
+		this.nickname = nickname;
+		this.isDeleted = isDeleted;
 	}
 
 	public int getRid() {
@@ -91,14 +109,6 @@ public class Re_Reply {
 		this.isDeleted = isDeleted;
 	}
 
-	public int getBid() {
-		return bid;
-	}
-
-	public void setBid(int bid) {
-		this.bid = bid;
-	}
-
 	public String getNickname() {
 		return nickname;
 	}
@@ -107,10 +117,18 @@ public class Re_Reply {
 		this.nickname = nickname;
 	}
 
+	public int getLikeCount() {
+		return likeCount;
+	}
+
+	public void setLikeCount(int likeCount) {
+		this.likeCount = likeCount;
+	}
+
 	@Override
 	public String toString() {
 		return "Re_Reply [rid=" + rid + ", rrid=" + rrid + ", uid=" + uid + ", rrContents=" + rrContents + ", modTime="
-				+ modTime + ", isDeleted=" + isDeleted + ", bid=" + bid + ", nickname=" + nickname + "]";
+				+ modTime + ", isDeleted=" + isDeleted + ", nickname=" + nickname + "]";
 	}
 	
 }

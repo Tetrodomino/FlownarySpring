@@ -12,7 +12,7 @@ import com.example.flownary.entity.User;
 @Mapper
 public interface UserDao {
 	
-	@Select("select * from user where uid=#{uid}") // #{uid} 자리에 매개변수 uid가 들어감
+	@Select("select * from user where uid=#{uid}")
 	User getUser(int uid);
 	
 	@Select("select * from user where email=#{email}")
@@ -24,11 +24,13 @@ public interface UserDao {
 	List<User> getUserList(int count, int offset);
 	
 	@Insert("insert into user values (default, #{email}, #{pwd}, default, default"
-			+ ", default, default, default, default, default)")
+			+ ", default, default, default, default, default, #{gender}"
+			+ ", #{provider}, #{birth}, #{tel}, #{hashUid})")
 	void insertUser(User user);
 	
 	@Update("update user set pwd=#{pwd}, profile=#{profile}, uname=#{uname}, nickname=#{nickname}"
 			+ ", statusMessage=#{statusMessage}, snsDomain=#{snsDomain}"
+			+ ", gender=#{gender}, tel=#{tel}, hashUid=#{hashUid}"
 			+ " where uid=#{uid}")
 	void updateUser(User user);
 	

@@ -14,9 +14,9 @@ public class Board {
 	int replyCount;
 	String image;
 	String shareUrl;
-	int isDeleted;
-	String hashTag;
 	String nickname;
+	String hashTag;
+	int isDeleted;
 	
 	public Board() {
 	}
@@ -27,12 +27,28 @@ public class Board {
 		this.bContents = bContents;
 	}
 
+	public Board(int uid, String title, String bContents, String nickname) {
+		this.uid = uid;
+		this.title = title;
+		this.bContents = bContents;
+		this.nickname = nickname;
+	}
+
 	public Board(int uid, String title, String bContents, String image, String shareUrl) {
 		this.uid = uid;
 		this.title = title;
 		this.bContents = bContents;
 		this.image = image;
 		this.shareUrl = shareUrl;
+	}
+
+	public Board(int uid, String title, String bContents, String image, String shareUrl, String nickname) {
+		this.uid = uid;
+		this.title = title;
+		this.bContents = bContents;
+		this.image = image;
+		this.shareUrl = shareUrl;
+		this.nickname = nickname;
 	}
 
 	public Board(int uid, String title, String bContents, LocalDateTime modTime, String image, String shareUrl,
@@ -195,5 +211,13 @@ public class Board {
 	
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public String getHashTag() {
+		return hashTag;
+	}
+
+	public void setHashTag(String hashTag) {
+		this.hashTag = hashTag;
 	}
 }

@@ -9,8 +9,9 @@ public class Reply {
 	int uid;
 	String rContents;
 	LocalDateTime modTime;
-	int isDeleted;
+	int likeCount;
 	String nickname;
+	int isDeleted;
 	
 	public Reply() {
 	}
@@ -24,6 +25,13 @@ public class Reply {
 		this.bid = bid;
 		this.uid = uid;
 		this.rContents = rContents;
+	}
+
+	public Reply(int bid, int uid, String rContents, String nickname) {
+		this.bid = bid;
+		this.uid = uid;
+		this.rContents = rContents;
+		this.nickname = nickname;
 	}
 
 	public Reply(int rid, int bid, int uid, String rContents, LocalDateTime modTime, int isDeleted) {
@@ -43,6 +51,18 @@ public class Reply {
 		this.modTime = modTime;
 		this.isDeleted = isDeleted;
 		this.nickname = nickname;
+	}
+
+	public Reply(int rid, int bid, int uid, String rContents, LocalDateTime modTime, int likeCount, String nickname,
+			int isDeleted) {
+		this.rid = rid;
+		this.bid = bid;
+		this.uid = uid;
+		this.rContents = rContents;
+		this.modTime = modTime;
+		this.likeCount = likeCount;
+		this.nickname = nickname;
+		this.isDeleted = isDeleted;
 	}
 
 	public int getRid() {
@@ -99,6 +119,14 @@ public class Reply {
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public int getLikeCount() {
+		return likeCount;
+	}
+
+	public void setLikeCount(int likeCount) {
+		this.likeCount = likeCount;
 	}
 
 	@Override

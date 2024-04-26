@@ -14,6 +14,11 @@ public class User {
 	String snsDomain;
 	int status;
 	LocalDate regDate;
+	int gender;
+	int provider;
+	LocalDate birth;
+	String tel;
+	String hashUid;
 	
 	public User() {
 	}
@@ -36,7 +41,8 @@ public class User {
 	}
 
 	public User(int uid, String email, String pwd, String profile, String uname, String nickname, String statusMessage,
-			String snsDomain, int status, LocalDate regDate) {
+			String snsDomain, int status, LocalDate regDate, int gender, int provider, LocalDate birth, String tel,
+			String hashUid) {
 		this.uid = uid;
 		this.email = email;
 		this.pwd = pwd;
@@ -47,6 +53,51 @@ public class User {
 		this.snsDomain = snsDomain;
 		this.status = status;
 		this.regDate = regDate;
+		this.gender = gender;
+		this.provider = provider;
+		this.birth = birth;
+		this.tel = tel;
+		this.hashUid = hashUid;
+	}
+
+	public int getGender() {
+		return gender;
+	}
+
+	public void setGender(int gender) {
+		this.gender = gender;
+	}
+
+	public int getProvider() {
+		return provider;
+	}
+
+	public void setProvider(int provider) {
+		this.provider = provider;
+	}
+
+	public LocalDate getBirth() {
+		return birth;
+	}
+
+	public void setBirth(LocalDate birth) {
+		this.birth = birth;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	public String getHashUid() {
+		return hashUid;
+	}
+
+	public void setHashUid(String hashUid) {
+		this.hashUid = hashUid;
 	}
 
 	public int getUid() {
@@ -133,6 +184,7 @@ public class User {
 	public String toString() {
 		return "User [uid=" + uid + ", email=" + email + ", pwd=" + pwd + ", profile=" + profile + ", uname=" + uname
 				+ ", nickname=" + nickname + ", statusMessage=" + statusMessage + ", snsDomain=" + snsDomain
-				+ ", status=" + status + ", regDate=" + regDate + "]";
+				+ ", status=" + status + ", regDate=" + regDate + ", gender=" + gender + ", provider=" + provider
+				+ ", birth=" + birth + ", tel=" + tel + ", hashUid=" + hashUid + "]";
 	}
 }
