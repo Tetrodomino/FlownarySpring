@@ -28,11 +28,14 @@ public interface UserDao {
 			+ ", #{provider}, #{birth}, #{tel}, #{hashUid})")
 	void insertUser(User user);
 	
-	@Update("update user set pwd=#{pwd}, profile=#{profile}, uname=#{uname}, nickname=#{nickname}"
+	@Update("update user set profile=#{profile}, uname=#{uname}, nickname=#{nickname}"
 			+ ", statusMessage=#{statusMessage}, snsDomain=#{snsDomain}"
 			+ ", gender=#{gender}, tel=#{tel}, hashUid=#{hashUid}"
 			+ " where uid=#{uid}")
 	void updateUser(User user);
+	
+	@Update("update user set pwd=#{pwd} where uid=#{uid}")
+	void updateUserPwd(User user);
 	
 	@Update("update user set status=-1 where uid=#{uid}")
 	void deleteUser(int uid);

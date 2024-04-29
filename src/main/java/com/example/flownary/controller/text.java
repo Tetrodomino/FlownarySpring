@@ -50,8 +50,10 @@ public class text {
 	
 	// React에서 데이터 받기
 	@GetMapping("/board/insert")
-	public void boardinsert(@RequestParam int id, @RequestParam String title)
+	public int boardinsert(@RequestParam int id, @RequestParam String title)
 	{
 		System.out.println("id: " + id + ", " + "title: " + title);
+		
+		return 2;
 	}
 }

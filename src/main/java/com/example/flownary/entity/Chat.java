@@ -1,43 +1,19 @@
 package com.example.flownary.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Chat {
 
 	int cid;
 	int uid1;
 	int uid2;
-	
-	public Chat() {
-	}
-
-	public Chat(int cid, int uid1, int uid2) {
-		this.cid = cid;
-		this.uid1 = uid1;
-		this.uid2 = uid2;
-	}
-
-	public int getCid() {
-		return cid;
-	}
-
-	public void setCid(int cid) {
-		this.cid = cid;
-	}
-
-	public int getUid1() {
-		return uid1;
-	}
-
-	public void setUid1(int uid1) {
-		this.uid1 = uid1;
-	}
-
-	public int getUid2() {
-		return uid2;
-	}
-
-	public void setUid2(int uid2) {
-		this.uid2 = uid2;
-	}
 
 	@Override
 	public String toString() {

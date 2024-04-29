@@ -51,4 +51,9 @@ public class UserServiceImpl implements UserService {
 		
 		return CORRECT_LOGIN;
 	}
+
+	@Override
+	public void updateUserPwd(User user) {
+		uDao.updateUserPwd(user);
+	}
 }
