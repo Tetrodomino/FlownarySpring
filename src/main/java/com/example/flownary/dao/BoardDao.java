@@ -23,12 +23,12 @@ public interface BoardDao {
 	@Select("select * from board"
 			+ " where isDeleted=0 and ${field} like #{query}"
 			+ " order by modTime desc"
-			+ " limit #{count} offset #{offset}")
-	List<Board> getBoardList(String field, String query, int count, int offset);
+			+ " limit #{count}")
+	List<Board> getBoardList(String field, String query, int count);
 	
 	@Insert("insert into board values(default, #{uid}, #{title}, #{bContents}, default, "
 			+ " default, default, default, #{image}, #{shareUrl}, "
-			+ " default, #{hashTag}, #{nickname})")
+			+ " #{nickname}, #{hashTag}, default)")
 	void insertBoard(Board board);
 	
 	@Update("update board set title=#{title}, bContents=#{bContents}, image=#{image}"

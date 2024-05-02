@@ -2,6 +2,9 @@ package com.example.flownary.entity;
 
 import java.time.LocalDateTime;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Board {
 
 	int bid;
@@ -17,9 +20,6 @@ public class Board {
 	String nickname;
 	String hashTag;
 	int isDeleted;
-	
-	public Board() {
-	}
 
 	public Board(int uid, String title, String bContents) {
 		this.uid = uid;
@@ -218,6 +218,18 @@ public class Board {
 	}
 
 	public void setHashTag(String hashTag) {
+		this.hashTag = hashTag;
+	}
+
+	public Board(int uid, String title, String bContents, String image, String shareUrl, String nickname,
+			String hashTag) {
+		super();
+		this.uid = uid;
+		this.title = title;
+		this.bContents = bContents;
+		this.image = image;
+		this.shareUrl = shareUrl;
+		this.nickname = nickname;
 		this.hashTag = hashTag;
 	}
 }
