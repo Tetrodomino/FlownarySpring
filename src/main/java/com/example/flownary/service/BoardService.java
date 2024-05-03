@@ -13,6 +13,8 @@ public interface BoardService {
 	
 	List<Board> getBoardList(int count, String field, String query);
 	
+	List<Board> getBoardListSearch(int count, List<String> field, String query);
+	
 	void insertBoard(Board board);
 	
 	void updateBoard(Board board);

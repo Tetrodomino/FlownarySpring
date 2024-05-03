@@ -1,6 +1,5 @@
 package com.example.flownary.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,35 +43,9 @@ public class BoardController {
 	//리스트 페이지로 무한스크롤 구현하려합니다
 	public JSONArray boardList(@RequestParam(name="c", defaultValue="1", required=false) int count,
 			@RequestParam(name="f", defaultValue="title", required=false) String field,
-			@RequestParam(name="f2", defaultValue="", required=false) String field2,
-			@RequestParam(name="f3", defaultValue="", required=false) String field3,
-			@RequestParam(name="q", defaultValue="", required=false) String query,
-			@RequestParam(defaultValue="1", required=false) int type) {
+			@RequestParam(name="q", defaultValue="",required=false) String query) {
 		
-		List<Board> list = new ArrayList<>();
-		
-		switch(type) {
-		case 1:
-			list = bSvc.getBoardList(count, field, query);			
-			break;
-		case 2:
-			List<String> fieldList = new ArrayList<>();
-			fieldList.add(field);
-			fieldList.add(field2);
-			list = bSvc.getBoardListSearch(count, fieldList, query);
-			break;
-		case 3: 
-			List<String> fieldList1 = new ArrayList<>();
-			fieldList1.add(field);
-			fieldList1.add(field2);
-			fieldList1.add(field3);
-			list = bSvc.getBoardListSearch(count, fieldList1, query);
-			break;
-		default:
-			System.out.println("error!");
-			break;
-		}
-		
+		List<Board> list = bSvc.getBoardList(count, field, query);
 		JSONArray jArr = new JSONArray();
 		for(Board board:list) {
 			HashMap<String, Object> hMap = new HashMap<String, Object>();
@@ -107,10 +80,10 @@ public class BoardController {
  			jreply.put("rid", reply.getRid());
  			jreply.put("bid", reply.getBid());
  			jreply.put("uid", reply.getUid());
- 			jreply.put("rContents", reply.getBid());
- 			jreply.put("modTime", reply.getBid());
- 			jreply.put("likeCount", reply.getBid());
- 			jreply.put("nickname", reply.getBid());
+ 			jreply.put("rContents", reply.getRContents());
+ 			jreply.put("modTime", reply.getModTime());
+ 			jreply.put("likeCount", reply.getLikeCount());
+ 			jreply.put("nickname", reply.getNickname());
 			jArr.add(jreply);
 		}
 		return jArr;
@@ -165,11 +138,11 @@ public class BoardController {
 		Reply reply = new Reply(dto.getBid(),dto.getUid(),dto.getRContents(),dto.getNickname());
 		rSvc.insertReply(reply);
 		
+		System.out.println(reply);
         // 댓글 조회수
 		Board board = new Board();
 		int replyCount = board.getReplyCount();
 		bSvc.updateReplyCount(dto.getBid(), replyCount);
-		System.out.println(reply);
 	}
 	
 	@PostMapping("/Re_Reply")
