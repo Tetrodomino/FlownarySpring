@@ -32,7 +32,7 @@ public class UserController {
 	
 	// 회원가입
 	@GetMapping("/register")
-	public void userRegister(@RequestParam String hashuid, @RequestParam int provider,
+	public JSONObject userRegister(@RequestParam String hashuid, @RequestParam int provider,
 			@RequestParam String email, @RequestParam String pwd) {
 		// 암호화 비밀번호 생성
 		String hashedPwd = "";
@@ -61,6 +61,8 @@ public class UserController {
 		set.setTheme("default");
 		
 		setSvc.insertSetting(set);
+		
+		return null;
 	}
 	
 	// 회원정보 수정
@@ -167,7 +169,7 @@ public class UserController {
 		return userOut;
 	}
 	
-	@GetMapping("/getUserEmail")
+	@GetMapping("/getUserByEmail")
 	public JSONObject getUserEmail(@RequestParam String email)
 	{
 		User user = userSvc.getUserEmail(email);

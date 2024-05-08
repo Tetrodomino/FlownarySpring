@@ -15,11 +15,17 @@ public interface LikeDao {
 	@Select("select * from like_ where lid=#{lid}")
 	Like_ getLike(int lid);
 	
+	@Select("select * from like_ where uid=#{uid} and type=#{type} and oid=#{oid}")
+	Like_ getLikeUid(int uid, int type, int oid);
+	
 	@Select("select * from like_ where type=#{type} and oid=#{oid} and stat=1")
 	List<Like_> getLikeList(int type, int oid);
 	
-	@Select("select * from like_ where type=#{type} and oid=#{oid} and stat=1")
-	List<Like_> getLikeListFuid(int type, int oid);
+	@Select("select * from like_ where fuid=#{fuid} and stat=1")
+	List<Like_> getLikeListFuid(int fuid);
+	
+	@Select("select count(lid) from like_ where type=#{type} and oid=#{oid} and stat=1")
+	int getLikeCount(int type, int oid);
 	
 	@Insert("insert into like_ values(default, #{uid}, #{fuid}, #{type}, #{oid}, default, default)")
 	void insertLike(Like_ like_);

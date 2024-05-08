@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,8 +38,61 @@ public class BoardController {
 	private final ReplyService rSvc;
 	private final Re_ReplyService ReReSvc;
 	
+	@GetMapping("/getBoard")
+	public JSONObject getBoard(@RequestParam int bid) {
+		Board board = bSvc.getBoard(bid);
+		
+		HashMap<String, Object> hMap = new HashMap<String, Object>();
+		
+		hMap.put("bid", board.getBid());
+		hMap.put("uid", board.getUid());
+		hMap.put("title", board.getTitle());
+		hMap.put("bContents", board.getbContents());
+		hMap.put("modTime", board.getModTime());
+		hMap.put("viewCount", board.getViewCount());
+		hMap.put("likeCount", board.getLikeCount());
+		hMap.put("replyCount", board.getReplyCount());
+		hMap.put("image", board.getImage());
+		hMap.put("shareUrl", board.getShareUrl());
+		hMap.put("isDeleted", board.getIsDeleted());
+		hMap.put("hashTag", board.getHashTag());
+		hMap.put("nickname", board.getNickname());
+		JSONObject jBoard = new JSONObject(hMap);
+		
+		return jBoard;
+	}
+	
+	@GetMapping("/getBoardUrl")
+	public JSONObject getBoardUrl(@RequestParam String url) {
+		Board board = bSvc.getBoardShareUrl2(url);
+		
+		HashMap<String, Object> hMap = new HashMap<String, Object>();
+		
+		if (board != null)
+		{
+			hMap.put("bid", board.getBid());
+			hMap.put("uid", board.getUid());
+			hMap.put("title", board.getTitle());
+			hMap.put("bContents", board.getbContents());
+			hMap.put("modTime", board.getModTime());
+			hMap.put("viewCount", board.getViewCount());
+			hMap.put("likeCount", board.getLikeCount());
+			hMap.put("replyCount", board.getReplyCount());
+			hMap.put("image", board.getImage());
+			hMap.put("shareUrl", board.getShareUrl());
+			hMap.put("isDeleted", board.getIsDeleted());
+			hMap.put("hashTag", board.getHashTag());
+			hMap.put("nickname", board.getNickname());
+			JSONObject jBoard = new JSONObject(hMap);
+			return jBoard;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
 	@GetMapping("/list")
-	//리스트 페이지로 무한스크롤 구현하려합니다
 	public JSONArray boardList(@RequestParam(name="c", defaultValue="1", required=false) int count,
 			@RequestParam(name="f", defaultValue="title", required=false) String field,
 			@RequestParam(name="f2", defaultValue="", required=false) String field2,
@@ -98,19 +149,19 @@ public class BoardController {
 	}
 	
 	@GetMapping("/replyList")
-	public JSONArray replyList(@RequestParam int bid,@RequestParam int uid,
-			@RequestParam int offset,@RequestParam int limit) {
-		List<Reply> list = rSvc.getReplyList(uid, offset, limit);
+	public JSONArray replyList(@RequestParam int bid,
+			@RequestParam int offset, @RequestParam int limit) {
+		List<Reply> list = rSvc.getReplyList(bid, offset, limit);
 		JSONArray jArr = new JSONArray();
 		for(Reply reply :list) {
 			JSONObject jreply = new JSONObject();
  			jreply.put("rid", reply.getRid());
  			jreply.put("bid", reply.getBid());
  			jreply.put("uid", reply.getUid());
- 			jreply.put("rContents", reply.getBid());
- 			jreply.put("modTime", reply.getBid());
- 			jreply.put("likeCount", reply.getBid());
- 			jreply.put("nickname", reply.getBid());
+ 			jreply.put("rContents", reply.getrContents());
+ 			jreply.put("modTime", reply.getModTime());
+ 			jreply.put("likeCount", reply.getLikeCount());
+ 			jreply.put("nickname", reply.getNickname());
 			jArr.add(jreply);
 		}
 		return jArr;
@@ -119,9 +170,25 @@ public class BoardController {
 	
 	@PostMapping("/insert")
 	public int insertForm(@RequestBody Board dto) {
+		
+		String shareUrl = "";
+		boolean t = true;
+		
+		while (t)
+		{
+			shareUrl = RandomStringUtils.randomAlphanumeric(10);
+			
+			if (bSvc.getBoardShareUrl(shareUrl) == 0)
+			{
+				t = false;
+				break;
+			}
+		}
+		
 		Board board = new Board(dto.getUid(), dto.getTitle()
-				, dto.getbContents(), dto.getImage(), dto.getShareUrl()
-				, dto.getHashTag(), dto.getNickname());
+				, dto.getbContents(), dto.getImage(), shareUrl
+				, dto.getNickname(), dto.getHashTag());
+		
 		bSvc.insertBoard(board);
 		return 0;
 	}
@@ -162,7 +229,7 @@ public class BoardController {
 	}
 	@PostMapping("/reply")
 	public void reply(@RequestBody Reply dto) {
-		Reply reply = new Reply(dto.getBid(),dto.getUid(),dto.getRContents(),dto.getNickname());
+		Reply reply = new Reply(dto.getBid(),dto.getUid(),dto.getrContents(),dto.getNickname());
 		rSvc.insertReply(reply);
 		
         // 댓글 조회수
@@ -186,13 +253,33 @@ public class BoardController {
 		bSvc.deleteBoard(bid);
 	}
 	
-//	@GetMapping("/like")
-//	public String like(@RequestBody Like_ dto) {
-//		Like_ like = lSvc.getLike(dto.getLid());
-//		if(like == null) {
-//			lSvc.insertLike(new Like_(dto.getUid(),dto.getType(),1));
-//		}
-//		return "좋아요";
-//	}
+	@PostMapping("/like")
+	public String like(@RequestBody Like_ dto) {
+		Like_ like = lSvc.getLikeUid(dto.getUid(), 1, dto.getOid());
+		
+		if(like == null) {
+			like = new Like_();
+			like.setType(1);
+			like.setOid(dto.getOid());
+			like.setFuid(dto.getFuid());
+			like.setUid(dto.getUid());
+			
+			lSvc.insertLike(like);
+		}
+		else {
+			if (like.getStat() == 0)
+			{
+				lSvc.remakeLike(like.getLid());				
+			}
+			else
+			{
+				lSvc.removeLike(like.getLid());
+			}
+		}
+		
+		bSvc.updateLikeCount(dto.getOid(), lSvc.getLikeCount(1, dto.getOid()));
+		
+		return "좋아요";
+	}
 		
 }

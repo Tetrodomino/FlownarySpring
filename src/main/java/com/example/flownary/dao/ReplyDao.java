@@ -18,13 +18,13 @@ public interface ReplyDao {
 	@Select("select * from reply"
 			+ " where isDeleted=0 and bid=#{bid}"
 			+ " order by modTime desc"
-			+ " limit #{count} offset #{offset}")
+			+ " limit #{limit} offset #{offset}")
 	List<Reply> getReplyList(int bid, int offset, int limit);
 	
 	@Select("select * from reply"
 			+ " where isDeleted=0 and uid=#{uid}"
 			+ " order by modTime desc"
-			+ " limit #{count} offset #{offset}")
+			+ " limit #{limit} offset #{offset}")
 	List<Reply> getReplyListByUid(int uid, int offset, int limit);
 	
 	@Insert("insert into reply values(default, #{bid}, #{uid}, #{rContents}"

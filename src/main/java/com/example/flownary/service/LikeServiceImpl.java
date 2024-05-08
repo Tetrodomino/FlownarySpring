@@ -21,13 +21,23 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	public Like_ getLikeUid(int uid, int type, int oid) {
+		return lDao.getLikeUid(uid, type, oid);
+	}
+	
+	@Override
 	public List<Like_> getLikeList(int type, int oid) {
 		return lDao.getLikeList(type, oid);
 	}
 
 	@Override
-	public List<Like_> getLikeListFuid(int type, int oid) {
-		return lDao.getLikeListFuid(type, oid);
+	public List<Like_> getLikeListFuid(int fuid) {
+		return lDao.getLikeListFuid(fuid);
+	}
+	
+	@Override
+	public int getLikeCount(int type, int oid) {
+		return lDao.getLikeCount(type, oid);
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import com.example.flownary.entity.Board;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService{
@@ -21,6 +20,16 @@ public class BoardServiceImpl implements BoardService{
 		return boardDao.getBoard(bid);
 	}
 
+	@Override
+	public int getBoardShareUrl(String ShareUrl) {
+		return boardDao.getBoardShareUrl(ShareUrl);
+	}
+	
+	@Override
+	public Board getBoardShareUrl2(String ShareUrl) {
+		return boardDao.getBoardShareUrl2(ShareUrl);
+	}
+	
 	@Override
 	public int getBoardCount(String field, String query) {
 		query = "%" + query + "%";
@@ -86,6 +95,4 @@ public class BoardServiceImpl implements BoardService{
 	public void updateViewCount(int bid) {
 		boardDao.updateViewCount(bid);
 	}
-
-	
 }

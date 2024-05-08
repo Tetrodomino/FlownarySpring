@@ -32,7 +32,7 @@ public interface NoticeDao {
 	void updateNotice(Notice notice);
 	
 	@Update("update notice set onOff=0 where nid=#{nid}")
-	void removeNotice(Notice notice);
+	void removeNotice(int nid);
 	
 	@Update("update notice set onOff=0 where uid=#{uid}")
 	void removeNoticeAll(int uid);

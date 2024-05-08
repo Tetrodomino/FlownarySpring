@@ -8,10 +8,14 @@ import com.example.flownary.entity.Like_;
 public interface LikeService {
 
 	Like_ getLike(int lid);
+	
+	Like_ getLikeUid(int uid, int type, int oid);
 
 	List<Like_> getLikeList(int type, int oid);
 	
-	List<Like_> getLikeListFuid(int type, int oid);
+	List<Like_> getLikeListFuid(int fuid);
+	
+	int getLikeCount(int type, int oid);
 	
 	void insertLike(Like_ like_);
 	

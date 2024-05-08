@@ -23,6 +23,10 @@ public class Reply {
 	int likeCount;
 	String nickname;
 	int isDeleted;	
+	
+	public String getrContents() {
+		return this.rContents;
+	}
 
 	@Override
 	public String toString() {
@@ -31,7 +35,6 @@ public class Reply {
 	}
 
 	public Reply(int bid, int uid, String rContents, String nickname) {
-		super();
 		this.bid = bid;
 		this.uid = uid;
 		this.rContents = rContents;

@@ -21,6 +21,10 @@ public class Notice {
 	LocalDateTime regTime;
 	int onOff;
 	
+	public String getnContents() {
+		return this.nContents;
+	}
+	
 	@Override
 	public String toString() {
 		return "Notice [nid=" + nid + ", uid=" + uid + ", type=" + type + ", oid=" + oid + ", nContents=" + nContents
