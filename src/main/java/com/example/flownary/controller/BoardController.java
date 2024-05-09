@@ -37,6 +37,7 @@ public class BoardController {
 	private final LikeService lSvc;
 	private final ReplyService rSvc;
 	private final Re_ReplyService ReReSvc;
+	private final NoticeController nC;
 	
 	@GetMapping("/getBoard")
 	public JSONObject getBoard(@RequestParam int bid) {
@@ -203,40 +204,17 @@ public class BoardController {
 		return "수정되었습니다";
 	}
 	
-	@GetMapping("/detail")
-	public JSONObject BoardDetail(@RequestParam int bid, @RequestParam int uid) {
-		// 조회 수
-		bSvc.updateViewCount(bid);
-		
-		//Board 객체를 model처럼 어떻게 보내줘야 할지 모르겠어요 흑흑
-		Board board = bSvc.getBoard(bid);
-		JSONObject jObj = new JSONObject();
-		jObj.put("bid", bid);
-		jObj.put("title", board.getTitle());
-		jObj.put("bContents", board.getbContents());
-		jObj.put("modTime", board.getModTime());
-		jObj.put("image", board.getImage());
-		jObj.put("hashTag", board.getHashTag());
-		jObj.put("nickname", board.getNickname());
-		// like_에서 type별로 좋아요 처리해야됌
-//		Like_ like = lSvc.
-		
-		// 좋아요 수
-		int likeCount = board.getLikeCount();
-		bSvc.updateLikeCount(bid, likeCount);
-		
-		return jObj;
-	}
 	@PostMapping("/reply")
 	public void reply(@RequestBody Reply dto) {
 		Reply reply = new Reply(dto.getBid(),dto.getUid(),dto.getrContents(),dto.getNickname());
 		rSvc.insertReply(reply);
 		
         // 댓글 조회수
-		Board board = new Board();
+		Board board = bSvc.getBoard(dto.getBid());
 		int replyCount = board.getReplyCount();
 		bSvc.updateReplyCount(dto.getBid(), replyCount);
-		System.out.println(reply);
+		
+		nC.insertNotice(dto.getUid(), 2, dto.getBid(), board.getUid());
 	}
 	
 	@PostMapping("/Re_Reply")
