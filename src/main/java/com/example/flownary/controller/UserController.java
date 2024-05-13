@@ -65,32 +65,6 @@ public class UserController {
 		return null;
 	}
 	
-	// 회원정보 수정
-//	@PostMapping("/update")
-//	public int userUpdate(@RequestParam(value="", required =false) String uname
-//			, @RequestParam(value="", required =false) String nickname
-//			, @RequestParam(value="", required =false) String profile
-//			, @RequestParam(value="", required =false) String statusMessage
-//			, @RequestParam(value="", required =false) String snsDomain
-//			, @RequestParam("uid") int uid
-//			, @RequestParam(value="", required =false) String birth
-//			, @RequestParam(value="", required =false) String tel)
-//	{
-//		System.out.println(uid);
-//		User user = new User();
-//		user.setUid(uid);
-//		user.setUname(uname);
-//		user.setNickname(nickname);
-//		user.setProfile(profile);
-//		user.setStatusMessage(statusMessage);
-//		user.setSnsDomain(snsDomain);
-//		user.setTel(tel);
-//		
-//		userSvc.updateUser(user);
-//		
-//		return 0;
-//	}
-	
 	// 회원정보 수정 (개선판)
 	@PostMapping(value = "/update")
 	public int userUpdate2(HttpServletRequest request, @RequestBody User dto)
@@ -146,6 +120,11 @@ public class UserController {
 	@GetMapping("/getUser")
 	public JSONObject getUser(@RequestParam int uid)
 	{
+		if (uid == -1)
+		{
+			return null;
+		}
+		
 		User user = userSvc.getUser(uid);
 		
 		HashMap<String, Object> hMap = new HashMap<String, Object>();

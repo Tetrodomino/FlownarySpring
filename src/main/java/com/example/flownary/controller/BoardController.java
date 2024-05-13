@@ -14,17 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.flownary.dto.Board.InsertBoardDto;
+import com.example.flownary.dto.Board.UpdateBoardDto;
+import com.example.flownary.dto.Re_Reply.InsertReReply;
+import com.example.flownary.dto.Reply.InsertReply;
 import com.example.flownary.entity.Board;
 import com.example.flownary.entity.Like_;
 import com.example.flownary.entity.Re_Reply;
 import com.example.flownary.entity.Reply;
+import com.example.flownary.entity.User;
 import com.example.flownary.service.BoardService;
 import com.example.flownary.service.LikeService;
 import com.example.flownary.service.Re_ReplyService;
 import com.example.flownary.service.ReplyService;
 import com.example.flownary.service.UserService;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -40,37 +44,15 @@ public class BoardController {
 	private final NoticeController nC;
 	
 	@GetMapping("/getBoard")
-	public JSONObject getBoard(@RequestParam int bid) {
+	public JSONObject getBoard(@RequestParam int bid,
+			@RequestParam(defaultValue="-1", required=false) int uid) {
 		Board board = bSvc.getBoard(bid);
-		
-		HashMap<String, Object> hMap = new HashMap<String, Object>();
-		
-		hMap.put("bid", board.getBid());
-		hMap.put("uid", board.getUid());
-		hMap.put("title", board.getTitle());
-		hMap.put("bContents", board.getbContents());
-		hMap.put("modTime", board.getModTime());
-		hMap.put("viewCount", board.getViewCount());
-		hMap.put("likeCount", board.getLikeCount());
-		hMap.put("replyCount", board.getReplyCount());
-		hMap.put("image", board.getImage());
-		hMap.put("shareUrl", board.getShareUrl());
-		hMap.put("isDeleted", board.getIsDeleted());
-		hMap.put("hashTag", board.getHashTag());
-		hMap.put("nickname", board.getNickname());
-		JSONObject jBoard = new JSONObject(hMap);
-		
-		return jBoard;
-	}
-	
-	@GetMapping("/getBoardUrl")
-	public JSONObject getBoardUrl(@RequestParam String url) {
-		Board board = bSvc.getBoardShareUrl2(url);
-		
+		int liked = lSvc.getLikeUidCount(uid, 1, bid);		
 		HashMap<String, Object> hMap = new HashMap<String, Object>();
 		
 		if (board != null)
 		{
+			User user = uSvc.getUser(board.getUid());
 			hMap.put("bid", board.getBid());
 			hMap.put("uid", board.getUid());
 			hMap.put("title", board.getTitle());
@@ -84,6 +66,41 @@ public class BoardController {
 			hMap.put("isDeleted", board.getIsDeleted());
 			hMap.put("hashTag", board.getHashTag());
 			hMap.put("nickname", board.getNickname());
+			hMap.put("liked", (liked == 1) ? true : false);
+			hMap.put("profile", (user != null) ? user.getProfile() : null);
+			JSONObject jBoard = new JSONObject(hMap);
+			
+			return jBoard;			
+		}
+		return null;
+	}
+	
+	@GetMapping("/getBoardUrl")
+	public JSONObject getBoardUrl(@RequestParam String url,
+			@RequestParam(defaultValue="-1", required=false) int uid) {
+		Board board = bSvc.getBoardShareUrl2(url);
+		
+		HashMap<String, Object> hMap = new HashMap<String, Object>();
+		
+		if (board != null)
+		{
+			int liked = lSvc.getLikeUidCount(uid, 1, board.getBid());
+			User user = uSvc.getUser(board.getUid());
+			hMap.put("bid", board.getBid());
+			hMap.put("uid", board.getUid());
+			hMap.put("title", board.getTitle());
+			hMap.put("bContents", board.getbContents());
+			hMap.put("modTime", board.getModTime());
+			hMap.put("viewCount", board.getViewCount());
+			hMap.put("likeCount", board.getLikeCount());
+			hMap.put("replyCount", board.getReplyCount());
+			hMap.put("image", board.getImage());
+			hMap.put("shareUrl", board.getShareUrl());
+			hMap.put("isDeleted", board.getIsDeleted());
+			hMap.put("hashTag", board.getHashTag());
+			hMap.put("nickname", board.getNickname());
+			hMap.put("liked", (liked == 1) ? true : false);
+			hMap.put("profile", user.getProfile());
 			JSONObject jBoard = new JSONObject(hMap);
 			return jBoard;
 		}
@@ -99,7 +116,8 @@ public class BoardController {
 			@RequestParam(name="f2", defaultValue="", required=false) String field2,
 			@RequestParam(name="f3", defaultValue="", required=false) String field3,
 			@RequestParam(name="q", defaultValue="", required=false) String query,
-			@RequestParam(defaultValue="1", required=false) int type) {
+			@RequestParam(defaultValue="1", required=false) int type,
+			@RequestParam(defaultValue="-1", required=false) int uid) {
 		
 		List<Board> list = new ArrayList<>();
 		
@@ -128,6 +146,8 @@ public class BoardController {
 		JSONArray jArr = new JSONArray();
 		for(Board board:list) {
 			HashMap<String, Object> hMap = new HashMap<String, Object>();
+			int liked = lSvc.getLikeUidCount(uid, 1, board.getBid());
+			User user = uSvc.getUser(board.getUid());
 			
  			hMap.put("bid", board.getBid());
 			hMap.put("uid", board.getUid());
@@ -142,6 +162,8 @@ public class BoardController {
 			hMap.put("isDeleted", board.getIsDeleted());
 			hMap.put("hashTag", board.getHashTag());
 			hMap.put("nickname", board.getNickname());
+			hMap.put("liked", (liked == 1) ? true : false);
+			hMap.put("profile", user.getProfile());
 			JSONObject jBoard = new JSONObject(hMap);
 			
 			jArr.add(jBoard);
@@ -156,6 +178,7 @@ public class BoardController {
 		JSONArray jArr = new JSONArray();
 		for(Reply reply :list) {
 			JSONObject jreply = new JSONObject();
+			User user = uSvc.getUser(reply.getUid());
  			jreply.put("rid", reply.getRid());
  			jreply.put("bid", reply.getBid());
  			jreply.put("uid", reply.getUid());
@@ -163,14 +186,36 @@ public class BoardController {
  			jreply.put("modTime", reply.getModTime());
  			jreply.put("likeCount", reply.getLikeCount());
  			jreply.put("nickname", reply.getNickname());
+ 			jreply.put("profile", user.getProfile());
 			jArr.add(jreply);
 		}
 		return jArr;
 	}
 	
+	@GetMapping("/re_ReplyList")
+	public JSONArray re_ReplyList(@RequestParam int rid) {
+		List<Re_Reply> list = ReReSvc.getReReplyList(rid);
+		JSONArray jArr = new JSONArray();
+		for(Re_Reply re_Reply :list) {
+			JSONObject jre_Reply = new JSONObject();
+			User user = uSvc.getUser(re_Reply.getUid());
+			jre_Reply.put("rrid", re_Reply.getRrid());
+			jre_Reply.put("rid", re_Reply.getRid());
+			jre_Reply.put("uid", re_Reply.getUid());
+			jre_Reply.put("rrContetnts", re_Reply.getRrContents());
+			jre_Reply.put("modTime", re_Reply.getModTime());
+			jre_Reply.put("likeCount", re_Reply.getLikeCount());
+			jre_Reply.put("nickname", re_Reply.getNickname());
+			jre_Reply.put("profile", user.getProfile());
+			jArr.add(jre_Reply);
+		}
+		return jArr;
+		
+	}
+	
 	
 	@PostMapping("/insert")
-	public int insertForm(@RequestBody Board dto) {
+	public int insertForm(@RequestBody InsertBoardDto dto) {
 		
 		String shareUrl = "";
 		boolean t = true;
@@ -195,17 +240,20 @@ public class BoardController {
 	}
 
 	@PostMapping("/update")
-	public String boardUpdate(@RequestBody Board dto,
-			HttpSession session) {
-		int sessUid = (int) session.getAttribute("sessUid");
-		Board board = new Board(sessUid, dto.getTitle(), dto.getbContents(), dto.getImage(),
-				dto.getShareUrl(),dto.getHashTag());
+	public String boardUpdate(@RequestBody UpdateBoardDto dto) {
+		
+		Board board = new Board();
+		board.setTitle(dto.getTitle());
+		board.setbContents(dto.getbContents());
+		board.setImage(dto.getImage());
+		board.setHashTag(dto.getHashTag());
+		
 		bSvc.updateBoard(board);
 		return "수정되었습니다";
 	}
 	
 	@PostMapping("/reply")
-	public void reply(@RequestBody Reply dto) {
+	public void reply(@RequestBody InsertReply dto) {
 		Reply reply = new Reply(dto.getBid(),dto.getUid(),dto.getrContents(),dto.getNickname());
 		rSvc.insertReply(reply);
 		
@@ -218,7 +266,7 @@ public class BoardController {
 	}
 	
 	@PostMapping("/Re_Reply")
-	public String Re_reply(@RequestBody Re_Reply dto) {
+	public String Re_reply(@RequestBody InsertReReply dto) {
 		Re_Reply re_Reply = new Re_Reply().builder().rid(dto.getRid()).uid(dto.getUid())
 				.rrContents(dto.getRrContents()).nickname(dto.getNickname()).build();
 		ReReSvc.insertReReply(re_Reply);

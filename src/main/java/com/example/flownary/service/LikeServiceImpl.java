@@ -21,6 +21,11 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	public int getLikeUidCount(int uid, int type, int oid) {
+		return lDao.getLikeUidCount(uid, type, oid);
+	}
+	
+	@Override
 	public Like_ getLikeUid(int uid, int type, int oid) {
 		return lDao.getLikeUid(uid, type, oid);
 	}
@@ -54,4 +59,5 @@ public class LikeServiceImpl implements LikeService {
 	public void removeLike(int lid) {
 		lDao.removeLike(lid);
 	}
+
 }

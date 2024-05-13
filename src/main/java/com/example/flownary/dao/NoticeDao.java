@@ -25,7 +25,7 @@ public interface NoticeDao {
 			+ " order by regTime desc")
 	List<Notice> getNoticeListAll(int uid);
 	
-	@Insert("insert into notice values(default, #{uid}, #{type}, #{oid}, #{nContents}, default, default)")
+	@Insert("insert into notice values(default, #{uid}, #{suid}, #{type}, #{oid}, #{nContents}, default, default)")
 	void insertNotice(Notice notice);
 	
 	@Update("update notice set nContents=#{nContents} where nid=#{nid}")

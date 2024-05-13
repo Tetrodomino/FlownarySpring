@@ -15,6 +15,9 @@ public interface LikeDao {
 	@Select("select * from like_ where lid=#{lid}")
 	Like_ getLike(int lid);
 	
+	@Select("select count(lid) from like_ where uid=#{uid} and type=#{type} and oid=#{oid} and stat=1")
+	int getLikeUidCount(int uid, int type, int oid);
+	
 	@Select("select * from like_ where uid=#{uid} and type=#{type} and oid=#{oid}")
 	Like_ getLikeUid(int uid, int type, int oid);
 	

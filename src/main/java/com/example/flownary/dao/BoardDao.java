@@ -52,7 +52,7 @@ public interface BoardDao {
 	void insertBoard(Board board);
 	
 	@Update("update board set title=#{title}, bContents=#{bContents}, image=#{image}"
-			+ ", shareUrl=#{shareUrl}, hashTag=#{hashTag} where bid=#{bid}")
+			+ ", hashTag=#{hashTag} where bid=#{bid}")
 	void updateBoard(Board board);
 	
 	@Update("update board set nickname=#{nickname} where uid=#{uid}")

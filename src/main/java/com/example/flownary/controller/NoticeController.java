@@ -1,5 +1,6 @@
 package com.example.flownary.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.flownary.entity.ChatMessage;
 import com.example.flownary.entity.Notice;
 import com.example.flownary.entity.User;
 import com.example.flownary.service.NoticeService;
@@ -43,6 +43,7 @@ public class NoticeController {
 		Notice notice = new Notice();
 		notice.setOid(oid);
 		notice.setUid(fuid);
+		notice.setSuid(uid);
 		notice.setType(type);
 		
 		User user = uSvc.getUser(uid);
@@ -108,21 +109,39 @@ public class NoticeController {
 	
 	@GetMapping("/list")
 	public JSONArray getNoticeUid(@RequestParam int uid,
-			@RequestParam(defaultValue="1", required=false) int type) {
+			@RequestParam(defaultValue="0", required=false) int type) {
 		
-		List<Notice> list = nSvc.getNoticeList(uid, type);
+		List<Notice> list = new ArrayList<>();
+		
+		switch(type) {
+		case 0:
+			list = nSvc.getNoticeListAll(uid);
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			list = nSvc.getNoticeList(uid, type);
+			break;
+		default:
+			System.out.println("notice list type error!");
+			break;
+		}
 		
 		JSONArray jArr = new JSONArray();
 		
 		for (Notice notice: list) {
 			HashMap<String, Object> hMap = new HashMap<>();
+			User user = uSvc.getUser(notice.getSuid());
 			
 			hMap.put("nid", notice.getNid());
 			hMap.put("uid", notice.getUid());
 			hMap.put("type", notice.getType());
 			hMap.put("oid", notice.getOid());
 			hMap.put("nContents", notice.getnContents());
+			hMap.put("suid", notice.getSuid());
 			hMap.put("regTime", notice.getRegTime());
+			hMap.put("profile", user.getProfile());
 			
 			JSONObject jObj = new JSONObject(hMap);
 			jArr.add(jObj);
