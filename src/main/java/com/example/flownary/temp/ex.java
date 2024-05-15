@@ -18,8 +18,6 @@ public class ex {
 			String s = unique.substring(2 * i, 2 * i + 2);
 			System.out.println(s);
 			
-			int k = Integer.parseInt(s);
-			
 		}
 	}
 

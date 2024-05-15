@@ -41,4 +41,14 @@ public class User {
 		String pwd1;
 		String pwd2;
 	}
+	
+	@Getter
+	@Setter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class GetUserNickEmailDto {
+		String email;
+		String nickname;
+		String profile;
+	}
 }

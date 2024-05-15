@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.flownary.dto.User.RegisterUserDto;
+import com.example.flownary.dto.User.UpdateUserDtoPwd;
 import com.example.flownary.entity.Setting;
 import com.example.flownary.entity.User;
 import com.example.flownary.service.SettingService;
@@ -31,28 +33,28 @@ public class UserController {
 	@Autowired private SettingService setSvc;
 	
 	// 회원가입
-	@GetMapping("/register")
-	public JSONObject userRegister(@RequestParam String hashuid, @RequestParam int provider,
-			@RequestParam String email, @RequestParam String pwd) {
+	@PostMapping("/register")
+	public int userRegister(@RequestBody RegisterUserDto dto) {
 		// 암호화 비밀번호 생성
 		String hashedPwd = "";
+		String hashuid = "";
 		
-		if (!pwd.equals("nn"))
-			hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
+		if (!dto.getPwd().equals("nn"))
+			hashedPwd = BCrypt.hashpw(dto.getPwd(), BCrypt.gensalt());
 		
-		if (hashuid.equals("nonGoogle"))
+		if (!dto.getHashuid().equals("nonGoogle"))
 		{
-			hashuid = "";
+			hashuid = dto.getHashuid();
 		}
 		
 		User user = new User();
 		user.setHashUid(hashuid);
-		user.setEmail(email);
+		user.setEmail(dto.getEmail());
 		user.setPwd(hashedPwd);
-		user.setProvider(provider);
+		user.setProvider(dto.getProvider());
 		userSvc.insertUser(user);
 		
-		user = userSvc.getUserEmail(email);
+		user = userSvc.getUserEmail(dto.getEmail());
 		
 		// 유저 생성했으므로 1:1로 해당 유저의 Setting에 대한 정보도 생성 후 저장
 		Setting set = new Setting();
@@ -62,7 +64,7 @@ public class UserController {
 		
 		setSvc.insertSetting(set);
 		
-		return null;
+		return 0;
 	}
 	
 	// 회원정보 수정 (개선판)
@@ -83,10 +85,12 @@ public class UserController {
 		return 0;
 	}
 	
-	@GetMapping("/updatepwd")
-	public int userUpdate(@RequestParam int uid, @RequestParam String pwd1, @RequestParam String pwd2)
+	@PostMapping("/updatepwd")
+	public int userUpdate(@RequestBody UpdateUserDtoPwd dto)
 	{
 		String pattern = "^(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{6,16}$";
+		String pwd1 = dto.getPwd1();
+		String pwd2 = dto.getPwd2();
 		
 		// 비밀번호 불일치
 		if (!pwd1.equals(pwd2))
@@ -109,7 +113,7 @@ public class UserController {
 		String hashedPwd = BCrypt.hashpw(pwd1, BCrypt.gensalt());
 		User user = new User();
 		user.setPwd(hashedPwd);
-		user.setUid(uid);
+		user.setUid(dto.getUid());
 		
 		userSvc.updateUserPwd(user);
 		
@@ -120,12 +124,10 @@ public class UserController {
 	@GetMapping("/getUser")
 	public JSONObject getUser(@RequestParam int uid)
 	{
-		if (uid == -1)
-		{
-			return null;
-		}
-		
 		User user = userSvc.getUser(uid);
+		
+		if (user == null)
+			return null;
 		
 		HashMap<String, Object> hMap = new HashMap<String, Object>();
 		hMap.put("id", uid);
@@ -152,6 +154,9 @@ public class UserController {
 	public JSONObject getUserEmail(@RequestParam String email)
 	{
 		User user = userSvc.getUserEmail(email);
+		
+		if (user == null)
+			return null;
 		
 		HashMap<String, Object> hMap = new HashMap<String, Object>();
 		hMap.put("id", user.getUid());

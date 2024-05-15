@@ -22,6 +22,10 @@ public class Board {
 		public String getbContents() {
 			return bContents;
 		}
+
+		public void setbContents(String bContents) {
+			this.bContents = bContents;
+		}
 	}
 	
 	@Getter
@@ -36,6 +40,10 @@ public class Board {
 		
 		public String getbContents() {
 			return bContents;
+		}
+
+		public void setbContents(String bContents) {
+			this.bContents = bContents;
 		}
 	}
 }

@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import com.example.flownary.dto.User.GetUserNickEmailDto;
 import com.example.flownary.entity.Notice;
-import com.example.flownary.entity.User;
 import com.example.flownary.service.NoticeService;
 import com.example.flownary.service.UserService;
 
@@ -46,7 +46,7 @@ public class NoticeController {
 		notice.setSuid(uid);
 		notice.setType(type);
 		
-		User user = uSvc.getUser(uid);
+		GetUserNickEmailDto user = uSvc.getUserNicknameEmail(uid);
 		String nContents = "";
 		String nickname = "";
 		
@@ -132,7 +132,7 @@ public class NoticeController {
 		
 		for (Notice notice: list) {
 			HashMap<String, Object> hMap = new HashMap<>();
-			User user = uSvc.getUser(notice.getSuid());
+			GetUserNickEmailDto user = uSvc.getUserNicknameEmail(notice.getSuid());
 			
 			hMap.put("nid", notice.getNid());
 			hMap.put("uid", notice.getUid());

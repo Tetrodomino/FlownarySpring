@@ -1,5 +1,6 @@
 package com.example.flownary.service;
 
+import com.example.flownary.dto.User.GetUserNickEmailDto;
 import com.example.flownary.entity.User;
 
 public interface UserService {
@@ -10,6 +11,8 @@ public interface UserService {
 	User getUser(int uid);
 	
 	User getUserEmail(String email);
+	
+	GetUserNickEmailDto getUserNicknameEmail(int uid);
 	
 	void insertUser(User user);
 	

@@ -40,11 +40,26 @@ public interface BoardDao {
 			+ " limit #{count}")
 	List<Board> getBoardList2(String field1, String field2, String query, int count);
 	
-	@Select("select * from board"
+	@Select("select count(bid) from board"
 			+ " where isDeleted=0 and (${field1} like #{query} or ${field2} like #{query} or ${field3} like #{query})"
 			+ " order by modTime desc"
 			+ " limit #{count}")
 	List<Board> getBoardList3(String field1, String field2, String field3, String query, int count);
+	
+	@Select("select count(bid) from board"
+			+ " where isDeleted=0 and ${field} like #{query}"
+			+ " order by modTime desc")
+	int getBoardListCount(String field, String query);
+	
+	@Select("select count(bid) from board"
+			+ " where isDeleted=0 and (${field1} like #{query} or ${field2} like #{query})"
+			+ " order by modTime desc")
+	int getBoardListCount2(String field1, String field2, String query);
+	
+	@Select("select count(bid) from board"
+			+ " where isDeleted=0 and (${field1} like #{query} or ${field2} like #{query} or ${field3} like #{query})"
+			+ " order by modTime desc")
+	int getBoardListCount3(String field1, String field2, String field3, String query);
 	
 	@Insert("insert into board values(default, #{uid}, #{title}, #{bContents}, default, "
 			+ " default, default, default, #{image}, #{shareUrl}, "
