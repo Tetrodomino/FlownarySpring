@@ -19,6 +19,7 @@ import com.example.flownary.dto.Board.UpdateBoardDto;
 import com.example.flownary.dto.User.GetUserNickEmailDto;
 import com.example.flownary.entity.Board;
 import com.example.flownary.service.BoardService;
+import com.example.flownary.service.FollowService;
 import com.example.flownary.service.LikeService;
 import com.example.flownary.service.UserService;
 
@@ -33,6 +34,7 @@ public class BoardController {
 	private final BoardService bSvc;
 	private final LikeService lSvc;
 	private final NoticeController nC;
+	private final FollowService fSvc;
 	
 	@GetMapping("/getBoard")
 	public JSONObject getBoard(@RequestParam int bid,
@@ -86,6 +88,15 @@ public class BoardController {
 			hMap.put("likeCount", board.getLikeCount());
 			hMap.put("replyCount", board.getReplyCount());
 			hMap.put("image", board.getImage());
+			if (board.getImage() == null || board.getImage() == "")
+			{
+				hMap.put("imagecount", 0);
+			}
+			else
+			{
+				int c = board.getImage().length() - board.getImage().replace(",", "").length();
+				hMap.put("iamgecount", c + 1);
+			}
 			hMap.put("shareUrl", board.getShareUrl());
 			hMap.put("isDeleted", board.getIsDeleted());
 			hMap.put("hashTag", board.getHashTag());
@@ -184,6 +195,15 @@ public class BoardController {
 			hMap.put("likeCount", board.getLikeCount());
 			hMap.put("replyCount", board.getReplyCount());
 			hMap.put("image", board.getImage());
+			if (board.getImage() == null || board.getImage() == "")
+			{
+				hMap.put("imagecount", 0);
+			}
+			else
+			{
+				int c = board.getImage().length() - board.getImage().replace(",", "").length();
+				hMap.put("iamgecount", c + 1);
+			}
 			hMap.put("shareUrl", board.getShareUrl());
 			hMap.put("isDeleted", board.getIsDeleted());
 			hMap.put("hashTag", board.getHashTag());
@@ -219,7 +239,20 @@ public class BoardController {
 				, dto.getNickname(), dto.getHashTag());
 		
 		bSvc.insertBoard(board);
-		return 0;
+		
+		board = bSvc.getBoardShareUrl2(shareUrl);
+		if (board != null)
+		{
+			List<Integer> uidlist = fSvc.getFollowIntegerListByFuid(dto.getUid());
+			
+			if (uidlist.size() > 0)
+			{
+				nC.insertNoticeList(uidlist, 1, board.getBid(), board.getUid());				
+			}
+			
+			return 0;
+		}
+		return -1;
 	}
 
 	@PostMapping("/update")

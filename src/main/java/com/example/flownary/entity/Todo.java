@@ -1,13 +1,18 @@
 package com.example.flownary.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class ChatMessage {
-    private Integer roomSeq;
-    private String message;
+public class Todo {
+
+	int tid;
+	int uid;
+	String contents;
+	int pri;
 }

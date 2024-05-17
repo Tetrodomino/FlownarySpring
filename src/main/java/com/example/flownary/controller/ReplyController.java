@@ -96,6 +96,9 @@ public class ReplyController {
 		Re_Reply re_Reply = new Re_Reply().builder().rid(dto.getRid()).uid(dto.getUid())
 				.rrContents(dto.getRrContents()).nickname(dto.getNickname()).build();
 		rrSvc.insertReReply(re_Reply);
+		Reply reply = rSvc.getReply(dto.getRid());
+		
+		nC.insertNotice(dto.getUid(), 2, dto.getRid(), reply.getUid());
 		
 		return "대댓글이 입력되었습니다";
 	}
