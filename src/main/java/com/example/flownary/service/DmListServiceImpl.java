@@ -19,10 +19,25 @@ public class DmListServiceImpl implements DmListService {
 	public DmList getDmList(int did) {
 		return dDao.getDmList(did);
 	}
+	
+	@Override
+	public int getDmListCid(int did) {
+		return dDao.getDmListCid(did);
+	}
 
+	@Override
+	public String getDmListLast(int cid) {
+		return dDao.getDmListLast(cid);
+	}
+	
 	@Override
 	public List<DmList> getDmListList(int cid, int count) {
 		return dDao.getDmListList(cid, count);
+	}
+	
+	@Override
+	public List<Integer> getDidList(int cid) {
+		return dDao.getDidList(cid);
 	}
 
 	@Override
@@ -31,13 +46,13 @@ public class DmListServiceImpl implements DmListService {
 	}
 
 	@Override
-	public void insertDmList(DmList dmList) {
+	public int insertDmList(DmList dmList) {
 		dDao.insertDmList(dmList);
+		return dmList.getDid();
 	}
 
 	@Override
 	public void deleteDmList(int did) {
 		dDao.deleteDmList(did);
 	}
-	
 }

@@ -19,6 +19,16 @@ public class FollowServiceImpl implements FollowService{
 	public Follow getFollow(int fid) {
 		return fDao.getFollow(fid);
 	}
+	
+	@Override
+	public Follow getFollowUid(int uid, int fuid) {
+		return fDao.getFollowUid(uid, fuid);
+	}
+	
+	@Override
+	public int getFollowUidCount(int uid, int fuid) {
+		return fDao.getFollowUidCount(uid, fuid);
+	}
 
 	@Override
 	public List<Follow> getFollowList(int uid) {
@@ -28,6 +38,16 @@ public class FollowServiceImpl implements FollowService{
 	@Override
 	public List<Follow> getFollowListByFuid(int fuid) {
 		return fDao.getFollowListByFuid(fuid);
+	}
+	
+	@Override
+	public int getFollowCount(int uid) {
+		return fDao.getFollowCount(uid);
+	}
+	
+	@Override
+	public int getFollowFuidCount(int fuid) {
+		return fDao.getFollowFuidCount(fuid);
 	}
 	
 	@Override

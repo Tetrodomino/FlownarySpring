@@ -17,17 +17,23 @@ public interface BoardService {
 	
 	List<Board> getBoardList(int count, String field, String query);
 	
+	List<Board> getMyBoardList(int uid);
+	
+	List<Board> getLikedBoardList(int uid);
+	
 	List<Board> getBoardListSearch(int count, List<String> field, String query);
 	
 	int getBoardListCount(String field, String query);
 	
 	int getBoardListCountSearch(List<String> field, String query);
 	
-	void insertBoard(Board board);
+	int insertBoard(Board board);
 	
 	void updateBoard(Board board);
 	
 	void updateBoardNickname(int uid, String nickname);
+	
+	void disableBoard(int bid, int isDeleted);
 	
 	void deleteBoard(int bid);
 	

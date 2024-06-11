@@ -22,7 +22,10 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.flownary.dto.DmList.insertDmList;
 import com.example.flownary.dto.User.GetUserNickEmailDto;
+import com.example.flownary.entity.Chat;
 import com.example.flownary.entity.DmList;
+import com.example.flownary.service.ChatService;
+import com.example.flownary.service.ChatUserService;
 import com.example.flownary.service.DmListService;
 import com.example.flownary.service.UserService;
 
@@ -38,13 +41,16 @@ public class DmListController {
 	
 	private final DmListService dSvc;
 	private final UserService uSvc;
+	private final ChatService cSvc;
+	private final ChatUserService cuSvc;
+	private final NoticeController nC;
 
     private static final Set<String> SESSION_IDS = new HashSet<>();
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat") // "/pub/chat"
+    @MessageMapping("/chatroom") // "/pub/chat"
     public void publishChat(insertDmList idmList) {
-        log.info("publishChat : {}", idmList);
+        log.info("publishChat : {}", idmList.toString());
         
         DmList dmList = new DmList();
         dmList.setCid(idmList.getCid());
@@ -55,9 +61,51 @@ public class DmListController {
         dmList.setdTime(LocalDateTime.now());
         dmList.setProfile(idmList.getProfile());
         
-        dSvc.insertDmList(dmList);
+        int did = dSvc.insertDmList(dmList);
+        dmList = dSvc.getDmList(did);
+        dmList.setProfile(idmList.getProfile());
         
-        messagingTemplate.convertAndSend("/sub/chat/" + dmList.getCid(), dmList);
+        List<Integer> list = cuSvc.getChatUserListExInt(idmList.getCid(), idmList.getUid());
+        nC.insertNoticeList(list, 4, idmList.getCid(), idmList.getUid());
+        
+        cSvc.updateChatTime(idmList.getCid());
+        
+        JSONObject jObj = new JSONObject();
+        jObj.put("cid", idmList.getCid());
+        jObj.put("lastMessage", idmList.getdContents());
+        jObj.put("status", idmList.getStatus());
+        
+        messagingTemplate.convertAndSend("/user/chat/" + dmList.getCid(), dmList);
+        messagingTemplate.convertAndSend("/topic/chatlist", jObj);
+    }
+    
+    public void publishChat2(insertDmList idmList, Chat chat, int fuid) {
+    	log.info("publishChat : {}", idmList.toString());
+    	
+        DmList dmList = new DmList();
+        dmList.setCid(idmList.getCid());
+        dmList.setUid(idmList.getUid());
+        dmList.setdContents(idmList.getdContents());
+        dmList.setdFile(idmList.getdFile());
+        dmList.setNickname(idmList.getNickname());
+        dmList.setdTime(LocalDateTime.now());
+        dmList.setProfile(idmList.getProfile());
+        
+        int did = dSvc.insertDmList(dmList);
+        System.out.println(did);
+        List<Integer> list = cuSvc.getChatUserListExInt(idmList.getCid(), idmList.getUid());
+        nC.insertNoticeList(list, 4, idmList.getCid(), idmList.getUid());
+        
+        JSONObject jObj = new JSONObject();
+        jObj.put("cid", idmList.getCid());
+        jObj.put("lastMessage", idmList.getdContents());
+        jObj.put("status", chat.getStatus());
+        jObj.put("statusTime", chat.getStatusTime());
+        jObj.put("name", chat.getName());
+        jObj.put("userCount", cuSvc.getChatUserCount(chat.getCid()));
+        jObj.put("targetuser", fuid);
+        jObj.put("senduser", idmList.getUid());
+        messagingTemplate.convertAndSend("/topic/chatlistnew", jObj);
     }
 
     @EventListener(SessionConnectEvent.class)
@@ -76,12 +124,12 @@ public class DmListController {
     
     @GetMapping("/list")
     public JSONArray getDmList(@RequestParam int cid,
-    		@RequestParam(defaultValue="20", required=false) int count) {
+    		@RequestParam(defaultValue="20", required=false) int count,
+    		@RequestParam(defaultValue="-1", required=false) int uid) {
     	List<DmList> list = dSvc.getDmListList(cid, count);
-    	if (list.size() == 0)
-    		return null;
-    	
     	JSONArray jArr = new JSONArray();
+    	if (list.size() == 0)
+    		return jArr;    	
     	
     	for (DmList dmList: list) {
     		HashMap<String, Object> hMap = new HashMap<String, Object>();
@@ -106,10 +154,9 @@ public class DmListController {
     public JSONArray getDmListUid(@RequestParam int uid,
     		@RequestParam(defaultValue="20", required=false) int count) {
     	List<DmList> list = dSvc.getDmListListByUid(uid, count);
-    	if (list.size() == 0)
-    		return null;
-    	
     	JSONArray jArr = new JSONArray();
+    	if (list.size() == 0)
+    		return jArr;
     	
     	for (DmList dmList: list) {
     		HashMap<String, Object> hMap = new HashMap<String, Object>();
@@ -128,9 +175,14 @@ public class DmListController {
     	return jArr;
     }
     
+    @GetMapping("/getcid")
+    public int getCid(@RequestParam int did) {
+    	return dSvc.getDmListCid(did);
+    }
+    
     @PostMapping("/delete")
-    public int deleteDm(@RequestBody int did) {
-    	dSvc.deleteDmList(did);
+    public int deleteDm(@RequestBody JSONObject did) {
+    	dSvc.deleteDmList(Integer.parseInt(did.get("did").toString()));
     	return 0;
     }
 }

@@ -8,11 +8,17 @@ public interface DmListService {
 
 	DmList getDmList(int did);
 	
+	int getDmListCid(int did);
+	
+	String getDmListLast(int cid);
+	
 	List<DmList> getDmListList(int cid, int count);
+	
+	List<Integer> getDidList(int cid);
 	
 	List<DmList> getDmListListByUid(int uid, int count);
 	
-	void insertDmList(DmList dmList);
+	int insertDmList(DmList dmList);
 	
 	void deleteDmList(int did);
 }

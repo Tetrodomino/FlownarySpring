@@ -28,6 +28,8 @@ public class User {
 	LocalDate birth;
 	String tel;
 	String hashUid;
+	String location;
+	int role;
 
 	@Override
 	public String toString() {

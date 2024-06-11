@@ -223,7 +223,6 @@ public class Board {
 
 	public Board(int uid, String title, String bContents, String image, String shareUrl, String nickname,
 			String hashTag) {
-		super();
 		this.uid = uid;
 		this.title = title;
 		this.bContents = bContents;
@@ -231,5 +230,17 @@ public class Board {
 		this.shareUrl = shareUrl;
 		this.nickname = nickname;
 		this.hashTag = hashTag;
+	}
+
+	public Board(int uid, String title, String bContents, String image, String shareUrl, String nickname,
+			String hashTag, int isDeleted) {
+		this.uid = uid;
+		this.title = title;
+		this.bContents = bContents;
+		this.image = image;
+		this.shareUrl = shareUrl;
+		this.nickname = nickname;
+		this.hashTag = hashTag;
+		this.isDeleted = isDeleted;
 	}
 }

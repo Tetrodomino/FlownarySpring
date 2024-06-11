@@ -1,8 +1,12 @@
 package com.example.flownary.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.flownary.config.WebSocketEventListener;
+import com.example.flownary.dto.User.GetUserNickEmailDto;
 import com.example.flownary.dto.User.RegisterUserDto;
 import com.example.flownary.dto.User.UpdateUserDtoPwd;
 import com.example.flownary.entity.Setting;
@@ -27,10 +33,12 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 @RestController
 @RequestMapping("/user")
+@SuppressWarnings("unchecked")
 public class UserController {
 
 	@Autowired private UserService userSvc;
 	@Autowired private SettingService setSvc;
+	@Autowired private WebSocketEventListener wel;
 	
 	// 회원가입
 	@PostMapping("/register")
@@ -52,6 +60,19 @@ public class UserController {
 		user.setEmail(dto.getEmail());
 		user.setPwd(hashedPwd);
 		user.setProvider(dto.getProvider());
+		if (dto.getProvider() == 0) {
+			user.setBirth(dto.getBirth());
+			user.setUname(dto.getUname());
+			user.setNickname(dto.getNickname());
+			user.setTel(dto.getTel());			
+		}
+		else if (dto.getProvider() == 1) {
+			String hashcode = "";
+			
+			hashcode = RandomStringUtils.randomAlphanumeric(10);
+			user.setUname("USER" + hashcode);
+			user.setNickname("USERNickname" + hashcode);
+		}
 		userSvc.insertUser(user);
 		
 		user = userSvc.getUserEmail(dto.getEmail());
@@ -64,22 +85,24 @@ public class UserController {
 		
 		setSvc.insertSetting(set);
 		
-		return 0;
+		return user.getUid();
 	}
 	
 	// 회원정보 수정 (개선판)
 	@PostMapping(value = "/update")
 	public int userUpdate2(HttpServletRequest request, @RequestBody User dto)
 	{
-		System.out.println(dto);
 		User user = new User();
 		user.setUid(dto.getUid());
 		user.setUname(dto.getUname());
 		user.setNickname(dto.getNickname());
 		user.setProfile(dto.getProfile());
 		user.setStatusMessage(dto.getStatusMessage());
+		user.setGender(dto.getGender());
 		user.setSnsDomain(dto.getSnsDomain());
 		user.setTel(dto.getTel());
+		user.setBirth(dto.getBirth());
+		user.setLocation(dto.getLocation());
 		
 		userSvc.updateUser(user);
 		return 0;
@@ -144,10 +167,36 @@ public class UserController {
 		hMap.put("birth", user.getBirth());
 		hMap.put("tel", user.getTel());
 		hMap.put("hashUid", user.getHashUid());
-		
+		hMap.put("location", user.getLocation());
+		hMap.put("role", user.getRole());
 		JSONObject userOut = new JSONObject(hMap);
 		
 		return userOut;
+	}
+	
+	@GetMapping("/getUserNickEmail")
+	public JSONObject getUserNickname(@RequestParam int uid) {
+		if (uid == -1)
+			return null;
+		
+		GetUserNickEmailDto user = userSvc.getUserNicknameEmail(uid);
+		
+		HashMap<String, Object> hMap = new HashMap<String, Object>();
+		hMap.put("id", uid);
+		hMap.put("email", user.getEmail());
+		hMap.put("profile", user.getProfile());
+		if (user.getNickname() != null && user.getNickname() != "")
+		{
+			hMap.put("nickname", user.getNickname());    			
+		}
+		else
+		{
+			hMap.put("nickname", user.getEmail().split("@")[0]);
+		}
+		
+		JSONObject jObj = new JSONObject(hMap);
+		
+		return jObj;
 	}
 	
 	@GetMapping("/getUserByEmail")
@@ -173,9 +222,95 @@ public class UserController {
 		hMap.put("birth", user.getBirth());
 		hMap.put("tel", user.getTel());
 		hMap.put("hashUid", user.getHashUid());
+		hMap.put("role", user.getRole());
 		
 		JSONObject userOut = new JSONObject(hMap);
 		
 		return userOut;
+	}
+	
+	@GetMapping("/nickname")
+	public String nickname(@RequestParam String email, String nickname) {
+		List<User> userList = userSvc.getOthersUserList(email);
+		JSONObject jObj = new JSONObject();
+		JSONArray jArr = new JSONArray();
+
+		for (int i = 0; i < userList.size(); i++) {
+			JSONObject jObject = new JSONObject();
+			User user = userList.get(i);
+
+			jObject.put("nickname", user.getNickname());
+			jArr.add(jObject);
+		}
+		jObj.put("item", jArr);
+		return jArr.toString();
+	}
+
+	@GetMapping("/tel")
+	public String tel(@RequestParam String email, String tel) {
+		List<User> userList = userSvc.getOthersUserList(email);
+		JSONObject jObj = new JSONObject();
+		JSONArray jArr = new JSONArray();
+
+		for (int i = 0; i < userList.size(); i++) {
+			JSONObject jObject = new JSONObject();
+			User user = userList.get(i);
+
+			jObject.put("tel", user.getTel());
+			jArr.add(jObject);
+		}
+		jObj.put("item", jArr);
+		return jArr.toString();
+	}
+	
+	// 유저 리스트 불러오기 - 관리자 페이지
+	@GetMapping("getUserList")
+	public JSONArray userList() {
+		List<User> userList = new ArrayList<>();
+		userList = userSvc.getUserList();
+
+
+		JSONArray jArr = new JSONArray();
+		for (User user : userList) {
+			HashMap<String, Object> hMap = new HashMap<String, Object>();
+			hMap.put("uid", user.getUid());
+			hMap.put("profile", user.getProfile());
+			hMap.put("uname", user.getUname());
+			hMap.put("nickname", user.getNickname());
+			hMap.put("status", user.getStatus());
+			hMap.put("regDate", user.getRegDate());
+			hMap.put("gender", user.getGender());
+			hMap.put("provider", user.getProvider());
+			hMap.put("birth", user.getBirth());
+			hMap.put("tel", user.getTel());
+			hMap.put("role", user.getRole());
+
+			JSONObject jUser = new JSONObject(hMap);
+
+
+			jArr.add(jUser);
+		}
+		return jArr;
+	}
+	
+	// 유저 상태 변환 - 활성화 비활성화 - 추가 수정 필요
+	@PostMapping("updateUserStatus")
+	public int updateUserStatus(HttpServletRequest request, @RequestBody User dto) {
+		User user = userSvc.getUser(dto.getUid());
+		user.setUid(dto.getUid());
+		user.setStatus(dto.getStatus());
+		
+		userSvc.updateUserStatus(user);
+		return 0;		
+	}
+	
+	@GetMapping("/onPage")
+	public int getUserOnPage(@RequestParam int uid, @RequestParam String page) {
+		if (wel.isUserOnPage(uid, page)) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
 	}
 }

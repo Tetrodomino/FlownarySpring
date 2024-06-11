@@ -15,11 +15,23 @@ public interface FollowDao {
 	@Select("select * from follow where fid=#{fid}")
 	Follow getFollow(int fid);
 	
+	@Select("select * from follow where uid=#{uid} and fuid=#{fuid}")
+	Follow getFollowUid(int uid, int fuid);
+	
+	@Select("select count(fid) from follow where uid=#{uid} and fuid=#{fuid}")
+	int getFollowUidCount(int uid, int fuid);
+	
 	@Select("select * from follow where uid=#{uid}")
 	List<Follow> getFollowList(int uid);
 	
 	@Select("select * from follow where fuid=#{fuid}")
 	List<Follow> getFollowListByFuid(int fuid);
+	
+	@Select("select count(fid) from follow where uid=#{uid}")
+	int getFollowCount(int uid);
+	
+	@Select("select count(fid) from follow where fuid=#{fuid}")
+	int getFollowFuidCount(int fuid);
 	
 	@Select("select uid from follow where fuid=#{fuid}")
 	List<Integer> getFollowIntegerListByFuid(int fuid);
