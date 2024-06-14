@@ -15,7 +15,7 @@
 ### Follow - 팔로우
 ### Notice - 알림
 ### Todo - 할 일
-### Like - 좋아요
+### Like_ - 좋아요
 ### Family - 패밀리
 ### FamilyUser - 패밀리에 소속된 유저
 ### Declaration - 신고 정보
